@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>HR Portal</h2>
+  <ul>
+    <li onclick="showSection('dashboard')">Dashboard</li>
+    <li onclick="showSection('employees')">Employés</li>
+    <li onclick="showSection('departements')">Départements</li>
+  </ul>
+</div>
+
+<div class="main">
+
+  <section id="dashboard" class="section">
+    <h2>Dashboard</h2>
+    <p>Vue générale RH</p>
+  </section>
+
+  <section id="employees" class="section">
+    <h2>Gestion des employés</h2>
+
+    <form id="employeeForm">
+      <input type="text" id="nom" placeholder="Nom" required>
+      <input type="text" id="prenom" placeholder="Prénom" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="text" id="poste" placeholder="Poste" required>
+      <input type="number" id="salaire" placeholder="Salaire" required>
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Email</th>
+          <th>Poste</th>
+          <th>Salaire</th>
+        </tr>
+      </thead>
+      <tbody id="employeeList"></tbody>
+    </table>
+  </section>
+
+  <section id="departements" class="section">
+    <h2>Départements</h2>
+    <p>À venir (semaine 2)</p>
+  </section>
+
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/employee.js"></script>
+</body>
+</html>

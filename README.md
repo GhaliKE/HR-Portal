@@ -4,8 +4,9 @@ Projet Front-End réalisé en JavaScript Vanilla dans le cadre du module
 **Développement Web – 3IIR (2025–2026)**.
 
 ## 👥 Membres du groupe
-- Ghali KE
-- [Nom du binôme]
+- Ghali EL KIRAA
+- Saad HADAOUI
+- Simo ZOUHAL
 
 ## 🎯 Sujet
 **HR Portal** – Gestion des Ressources Humaines
@@ -18,26 +19,10 @@ des employés et des départements, avec persistance des données et visualisati
 des statistiques RH.
 
 Technologies utilisées :
-- HTML5
-- CSS3
-- JavaScript Vanilla
+- HTML
+- CSS
+- JavaScript 
 - LocalStorage
-
----
-
-## 📁 Structure du projet
-HR-Portal/
-├── index.html
-├── README.md
-├── css/
-│ └── style.css
-└── js/
-├── app.js
-├── employees.js
-└── departements.js
-
-yaml
-Copy code
 
 ---
 

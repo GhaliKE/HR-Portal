@@ -18,11 +18,13 @@
 
 <div class="main">
 
+  <!-- DASHBOARD -->
   <section id="dashboard" class="section">
     <h2>Dashboard</h2>
-    <p>Vue générale RH</p>
+    <p>À venir (Semaine 3)</p>
   </section>
 
+  <!-- EMPLOYÉS -->
   <section id="employees" class="section">
     <h2>Gestion des employés</h2>
 
@@ -32,8 +34,15 @@
       <input type="email" id="email" placeholder="Email" required>
       <input type="text" id="poste" placeholder="Poste" required>
       <input type="number" id="salaire" placeholder="Salaire" required>
-      <button type="submit">Ajouter</button>
+      <button type="submit">Enregistrer</button>
     </form>
+
+    <input type="text" id="search" placeholder="Rechercher un employé">
+
+    <div class="actions">
+      <button onclick="sortByName()">Trier par nom</button>
+      <button onclick="sortBySalary()">Trier par salaire</button>
+    </div>
 
     <table>
       <thead>
@@ -43,20 +52,30 @@
           <th>Email</th>
           <th>Poste</th>
           <th>Salaire</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="employeeList"></tbody>
     </table>
   </section>
 
+  <!-- DÉPARTEMENTS -->
   <section id="departements" class="section">
     <h2>Départements</h2>
-    <p>À venir (semaine 2)</p>
+
+    <form id="deptForm">
+      <input type="text" id="deptName" placeholder="Nom du département" required>
+      <button type="submit">Ajouter</button>
+    </form>
+
+    <ul id="deptList"></ul>
   </section>
 
 </div>
 
 <script src="js/app.js"></script>
-<script src="js/employee.js"></script>
+<script src="js/employees.js"></script>
+<script src="js/departements.js"></script>
 </body>
 </html>
+

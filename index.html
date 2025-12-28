@@ -3,79 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <title>HR Portal</title>
+
+  <!-- Icons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <!-- Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<div class="sidebar">
-  <h2>HR Portal</h2>
-  <ul>
-    <li onclick="showSection('dashboard')">Dashboard</li>
-    <li onclick="showSection('employees')">Employés</li>
-    <li onclick="showSection('departements')">Départements</li>
-  </ul>
-</div>
+<div class="layout">
 
-<div class="main">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">HR Portal</div>
 
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="section">
-    <h2>Dashboard</h2>
-    <p>À venir (Semaine 3)</p>
-  </section>
+    <nav>
+      <a onclick="showSection('dashboard')" class="active">
+        <i class='bx bx-grid-alt'></i> Dashboard
+      </a>
+      <a onclick="showSection('employees')">
+        <i class='bx bx-user'></i> Employés
+      </a>
+      <a onclick="showSection('departments')">
+        <i class='bx bx-buildings'></i> Départements
+      </a>
+    </nav>
+  </aside>
 
-  <!-- EMPLOYÉS -->
-  <section id="employees" class="section">
-    <h2>Gestion des employés</h2>
+  <!-- MAIN -->
+  <div class="main">
 
-    <form id="employeeForm">
-      <input type="text" id="nom" placeholder="Nom" required>
-      <input type="text" id="prenom" placeholder="Prénom" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="text" id="poste" placeholder="Poste" required>
-      <input type="number" id="salaire" placeholder="Salaire" required>
-      <button type="submit">Enregistrer</button>
-    </form>
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <h2 id="pageTitle">Dashboard</h2>
+    </header>
 
-    <input type="text" id="search" placeholder="Rechercher un employé">
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <i class='bx bx-user'></i>
+          <div>
+            <span>Total employés</span>
+            <strong id="kpiEmployees">0</strong>
+          </div>
+        </div>
 
-    <div class="actions">
-      <button onclick="sortByName()">Trier par nom</button>
-      <button onclick="sortBySalary()">Trier par salaire</button>
-    </div>
+        <div class="kpi-card">
+          <i class='bx bx-money'></i>
+          <div>
+            <span>Salaire moyen</span>
+            <strong id="kpiSalary">0</strong>
+          </div>
+        </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>Email</th>
-          <th>Poste</th>
-          <th>Salaire</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="employeeList"></tbody>
-    </table>
-  </section>
+        <div class="kpi-card">
+          <i class='bx bx-cloud'></i>
+          <div>
+            <span>API Users</span>
+            <strong id="kpiApi">0</strong>
+          </div>
+        </div>
+      </div>
 
-  <!-- DÉPARTEMENTS -->
-  <section id="departements" class="section">
-    <h2>Départements</h2>
+      <div class="card">
+        <canvas id="salaryChart"></canvas>
+      </div>
+    </section>
 
-    <form id="deptForm">
-      <input type="text" id="deptName" placeholder="Nom du département" required>
-      <button type="submit">Ajouter</button>
-    </form>
+    <!-- EMPLOYEES -->
+    <section id="employees" class="section">
+      <div class="card">
+        <h3>Ajouter un employé</h3>
 
-    <ul id="deptList"></ul>
-  </section>
+        <form id="employeeForm" class="form-grid">
+          <input id="nom" placeholder="Nom" required>
+          <input id="prenom" placeholder="Prénom" required>
+          <input id="email" placeholder="Email" required>
+          <input id="poste" placeholder="Poste" required>
+          <input id="salaire" type="number" placeholder="Salaire" required>
+          <button>Enregistrer</button>
+        </form>
+      </div>
 
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Nom</th><th>Prénom</th><th>Email</th><th>Poste</th><th>Salaire</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employeeList"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- DEPARTMENTS -->
+    <section id="departments" class="section">
+      <div class="card">
+        <h3>Départements</h3>
+
+        <form id="deptForm" class="form-inline">
+          <input id="deptName" placeholder="Nom du département" required>
+          <button>Ajouter</button>
+        </form>
+
+        <ul id="deptList" class="list"></ul>
+      </div>
+    </section>
+
+  </div>
 </div>
 
 <script src="js/app.js"></script>
 <script src="js/employees.js"></script>
 <script src="js/departements.js"></script>
+<script src="js/dashboard.js"></script>
+
 </body>
 </html>
-

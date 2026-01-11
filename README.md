@@ -23,6 +23,8 @@ Technologies utilisées :
 - CSS
 - JavaScript 
 - LocalStorage
+- Chart.js
+- API RandomUser
 
 ---
 
@@ -32,7 +34,7 @@ Technologies utilisées :
 - Mise en place de la structure SPA
 - Sidebar + navigation dynamique
 - Module Employés :
-  - Ajout d’un employé
+  - Ajout d'un employé
   - Affichage de la liste
   - Sauvegarde via LocalStorage
 
@@ -49,15 +51,37 @@ Technologies utilisées :
   - LocalStorage
 - Interface stabilisée
 
+### ✅ Semaine 3 (TERMINÉE)
+- Dashboard RH complet avec KPI :
+  - Nombre total d'employés
+  - Salaire moyen, minimum, maximum
+  - Nombre de départements
+  - Nombre de postes uniques
+- Graphiques interactifs avec Chart.js :
+  - Graphique en barres des salaires par employé
+  - Graphique en secteurs de la répartition par département
+  - Graphique en barres des salaires moyens par poste
+- Intégration API RandomUser (fetch) :
+  - Génération automatique d'employés aléatoires
+  - Support multi-nationalités (FR, US, GB)
+- Modules avancés :
+  - Gestion des présences (attendance.js)
+  - Système de paie (payroll.js)
+  - Paramètres système (settings.js)
+  - Interactions améliorées (enhanced-interactions.js)
+- Page de présentation dédiée (presentation.html)
+
 ---
 
-## 📌 Prochaines étapes (Semaine 3)
-- Dashboard RH
-- KPI (nombre d’employés, salaire moyen, etc.)
-- Graphiques avec Chart.js
-- Intégration API RandomUser (fetch)
+## 🎉 Projet COMPLET
+✅ **Toutes les semaines (1, 2, 3) sont terminées**
+- SPA complètement fonctionnelle
+- Persistance LocalStorage
+- Interface responsive et moderne
+- Graphiques dynamiques
+- Intégration API externe
 
 ---
 
 ## 📅 Dernière mise à jour
-Semaine 2 – CRUD complet et module départements
+Semaine 3 – Projet terminé avec dashboard, graphiques et API

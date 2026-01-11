@@ -2,13 +2,21 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>HR Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Portal - Gestion des Ressources Humaines</title>
 
   <!-- Icons -->
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  
+  <!-- Modern Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Date Picker -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
@@ -16,23 +24,62 @@
 
 <body>
 
+<!-- Loading Screen -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="loading-spinner"></div>
+  <p>Chargement du portail RH...</p>
+</div>
+
+<!-- Notification Container -->
+<div id="notificationContainer" class="notification-container"></div>
+
 <div class="layout">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="logo">HR Portal</div>
+    <div class="logo">
+      <i class='bx bx-briefcase'></i>
+      <span>HR Portal</span>
+    </div>
 
     <nav>
       <a onclick="showSection('dashboard')" class="active">
-        <i class='bx bx-grid-alt'></i> Dashboard
+        <i class='bx bx-grid-alt'></i>
+        <span>Dashboard</span>
       </a>
       <a onclick="showSection('employees')">
-        <i class='bx bx-user'></i> Employés
+        <i class='bx bx-user'></i>
+        <span>Employés</span>
+        <span class="badge" id="employeeCount">0</span>
       </a>
       <a onclick="showSection('departments')">
-        <i class='bx bx-buildings'></i> Départements
+        <i class='bx bx-building'></i>
+        <span>Départements</span>
+      </a>
+      <a onclick="showSection('attendance')">
+        <i class='bx bx-time'></i>
+        <span>Présence</span>
+      </a>
+      <a onclick="showSection('payroll')">
+        <i class='bx bx-money'></i>
+        <span>Paie</span>
+      </a>
+      <a onclick="showSection('reports')">
+        <i class='bx bx-bar-chart'></i>
+        <span>Rapports</span>
+      </a>
+      <a onclick="showSection('settings')">
+        <i class='bx bx-cog'></i>
+        <span>Paramètres</span>
       </a>
     </nav>
+
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+      <button onclick="toggleTheme()" id="themeToggle">
+        <i class='bx bx-moon'></i>
+      </button>
+    </div>
   </aside>
 
   <!-- MAIN -->
@@ -40,90 +87,751 @@
 
     <!-- TOPBAR -->
     <header class="topbar">
-      <h2 id="pageTitle">Dashboard</h2>
+      <div class="topbar-left">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <i class='bx bx-menu'></i>
+        </button>
+        <h2 id="pageTitle">Dashboard</h2>
+      </div>
+      
+      <div class="topbar-right">
+        <div class="search-box">
+          <i class='bx bx-search'></i>
+          <input type="text" placeholder="Recherche globale..." id="globalSearch">
+        </div>
+        
+        <div class="notifications">
+          <button class="notification-btn" onclick="toggleNotifications()">
+            <i class='bx bx-bell'></i>
+            <span class="notification-badge">3</span>
+          </button>
+          <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+              <h4>Notifications</h4>
+              <button onclick="clearAllNotifications()">Tout effacer</button>
+            </div>
+            <div class="notification-list">
+              <div class="notification-item">
+                <i class='bx bx-user-plus'></i>
+                <div>
+                  <p>Nouvel employé ajouté</p>
+                  <span>Il y a 2 minutes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="user-profile">
+          <img src="https://via.placeholder.com/40" alt="Profile">
+          <div class="user-info">
+            <span>Admin RH</span>
+            <small>Administrateur</small>
+          </div>
+        </div>
+      </div>
     </header>
 
     <!-- DASHBOARD -->
     <section id="dashboard" class="section active">
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="quick-action" onclick="showSection('employees'); document.getElementById('employeeForm').scrollIntoView();">
+          <i class='bx bx-user-plus'></i>
+          <span>Ajouter Employé</span>
+        </button>
+        <button class="quick-action" onclick="showSection('departments'); document.getElementById('deptForm').scrollIntoView();">
+          <i class='bx bx-building'></i>
+          <span>Nouveau Département</span>
+        </button>
+        <button class="quick-action" onclick="exportAllData()">
+          <i class='bx bx-download'></i>
+          <span>Exporter Données</span>
+        </button>
+        <button class="quick-action" onclick="showSection('reports')">
+          <i class='bx bx-bar-chart'></i>
+          <span>Voir Rapports</span>
+        </button>
+      </div>
+
+      <!-- Enhanced KPI Grid -->
       <div class="kpi-grid">
-        <div class="kpi-card">
+        <div class="kpi-card primary">
           <i class='bx bx-user'></i>
           <div>
             <span>Total employés</span>
             <strong id="kpiEmployees">0</strong>
+            <small class="trend positive">+5% ce mois</small>
           </div>
         </div>
 
-        <div class="kpi-card">
+        <div class="kpi-card success">
           <i class='bx bx-money'></i>
           <div>
             <span>Salaire moyen</span>
-            <strong id="kpiSalary">0</strong>
+            <strong id="kpiSalary">0 MAD</strong>
+            <small class="trend neutral">Stable</small>
           </div>
         </div>
 
-        <div class="kpi-card">
-          <i class='bx bx-cloud'></i>
+        <div class="kpi-card warning">
+          <i class='bx bx-briefcase'></i>
           <div>
-            <span>API Users</span>
-            <strong id="kpiApi">0</strong>
+            <span>Postes distincts</span>
+            <strong id="kpiPosts">0</strong>
+            <small class="trend positive">+2 nouveaux</small>
+          </div>
+        </div>
+
+        <div class="kpi-card info">
+          <i class='bx bx-building'></i>
+          <div>
+            <span>Départements</span>
+            <strong id="kpiDepts">0</strong>
+            <small class="trend neutral">Inchangé</small>
+          </div>
+        </div>
+
+        <div class="kpi-card accent">
+          <i class='bx bx-time'></i>
+          <div>
+            <span>Présents aujourd'hui</span>
+            <strong id="kpiPresent">0</strong>
+            <small class="trend positive">95% taux</small>
+          </div>
+        </div>
+
+        <div class="kpi-card danger">
+          <i class='bx bx-user-x'></i>
+          <div>
+            <span>Absents</span>
+            <strong id="kpiAbsent">0</strong>
+            <small class="trend negative">3 non justifiés</small>
           </div>
         </div>
       </div>
 
+      <!-- Charts Grid -->
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class='bx bx-bar-chart'></i> Distribution des Salaires</h3>
+            <div class="card-actions">
+              <button onclick="refreshChart('salaryChart')"><i class='bx bx-refresh'></i></button>
+              <button onclick="exportChart('salaryChart')"><i class='bx bx-download'></i></button>
+            </div>
+          </div>
+          <canvas id="salaryChart"></canvas>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class='bx bx-pie-chart-alt'></i> Répartition Départements</h3>
+            <div class="card-actions">
+              <button onclick="refreshChart('deptChart')"><i class='bx bx-refresh'></i></button>
+              <button onclick="exportChart('deptChart')"><i class='bx bx-download'></i></button>
+            </div>
+          </div>
+          <canvas id="deptChart"></canvas>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class='bx bx-trending-up'></i> Évolution Effectifs</h3>
+            <div class="card-actions">
+              <button onclick="refreshChart('evolutionChart')"><i class='bx bx-refresh'></i></button>
+              <button onclick="exportChart('evolutionChart')"><i class='bx bx-download'></i></button>
+            </div>
+          </div>
+          <canvas id="evolutionChart"></canvas>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class='bx bx-calendar'></i> Présence Hebdomadaire</h3>
+            <div class="card-actions">
+              <button onclick="refreshChart('attendanceChart')"><i class='bx bx-refresh'></i></button>
+              <button onclick="exportChart('attendanceChart')"><i class='bx bx-download'></i></button>
+            </div>
+          </div>
+          <canvas id="attendanceChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Activities -->
       <div class="card">
-        <canvas id="salaryChart"></canvas>
+        <div class="card-header">
+          <h3><i class='bx bx-history'></i> Activités Récentes</h3>
+          <button onclick="refreshActivities()"><i class='bx bx-refresh'></i> Actualiser</button>
+        </div>
+        <div class="activity-list" id="activityList">
+          <div class="activity-item">
+            <div class="activity-icon success">
+              <i class='bx bx-user-plus'></i>
+            </div>
+            <div class="activity-content">
+              <p><strong>Nouvel employé ajouté</strong></p>
+              <span>Ahmed Benali a été ajouté au département IT</span>
+              <small>Il y a 5 minutes</small>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon warning">
+              <i class='bx bx-edit'></i>
+            </div>
+            <div class="activity-content">
+              <p><strong>Profil modifié</strong></p>
+              <span>Salaire de Fatima Zahra mis à jour</span>
+              <small>Il y a 15 minutes</small>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon info">
+              <i class='bx bx-building'></i>
+            </div>
+            <div class="activity-content">
+              <p><strong>Nouveau département</strong></p>
+              <span>Département Marketing créé</span>
+              <small>Il y a 1 heure</small>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- EMPLOYEES -->
     <section id="employees" class="section">
       <div class="card">
-        <h3>Ajouter un employé</h3>
+        <div class="card-header">
+          <h3><i class='bx bx-plus-circle'></i> Ajouter un employé</h3>
+          <button onclick="toggleEmployeeForm()" class="toggle-btn">
+            <i class='bx bx-chevron-down'></i>
+          </button>
+        </div>
 
-        <form id="employeeForm" class="form-grid">
-          <input id="nom" placeholder="Nom" required>
-          <input id="prenom" placeholder="Prénom" required>
-          <input id="email" placeholder="Email" required>
-          <input id="poste" placeholder="Poste" required>
-          <input id="salaire" type="number" placeholder="Salaire" required>
-          <button>Enregistrer</button>
+        <form id="employeeForm" class="employee-form">
+          <div class="form-section">
+            <h4>Informations Personnelles</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nom *</label>
+                <input id="nom" placeholder="Nom de famille" required>
+              </div>
+              <div class="form-group">
+                <label>Prénom *</label>
+                <input id="prenom" placeholder="Prénom" required>
+              </div>
+              <div class="form-group">
+                <label>Email *</label>
+                <input id="email" type="email" placeholder="email@exemple.com" required>
+              </div>
+              <div class="form-group">
+                <label>Téléphone</label>
+                <input id="telephone" type="tel" placeholder="+212 6XX XXX XXX">
+              </div>
+              <div class="form-group">
+                <label>Date de naissance</label>
+                <input id="dateNaissance" type="date">
+              </div>
+              <div class="form-group">
+                <label>Adresse</label>
+                <input id="adresse" placeholder="Adresse complète">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Informations Professionnelles</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Poste *</label>
+                <input id="poste" placeholder="Intitulé du poste" required>
+              </div>
+              <div class="form-group">
+                <label>Salaire *</label>
+                <input id="salaire" type="number" placeholder="Salaire en MAD" required>
+              </div>
+              <div class="form-group">
+                <label>Département *</label>
+                <select id="department" required>
+                  <option value="">Sélectionner un département</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Date d'embauche</label>
+                <input id="dateEmbauche" type="date">
+              </div>
+              <div class="form-group">
+                <label>Type de contrat</label>
+                <select id="typeContrat">
+                  <option value="CDI">CDI</option>
+                  <option value="CDD">CDD</option>
+                  <option value="Stage">Stage</option>
+                  <option value="Freelance">Freelance</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Statut</label>
+                <select id="statut">
+                  <option value="Actif">Actif</option>
+                  <option value="Inactif">Inactif</option>
+                  <option value="Congé">En congé</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" onclick="resetEmployeeForm()" class="btn-secondary">
+              <i class='bx bx-refresh'></i> Réinitialiser
+            </button>
+            <button type="submit" class="btn-primary">
+              <i class='bx bx-check'></i> Enregistrer
+            </button>
+          </div>
         </form>
       </div>
 
       <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>Nom</th><th>Prénom</th><th>Email</th><th>Poste</th><th>Salaire</th><th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="employeeList"></tbody>
-        </table>
+        <div class="card-header">
+          <h3><i class='bx bx-list-ul'></i> Liste des employés</h3>
+          <div class="header-actions">
+            <span class="employee-count">Total: <strong id="totalEmployees">0</strong></span>
+            <button onclick="toggleFilters()" class="btn-secondary">
+              <i class='bx bx-filter'></i> Filtres
+            </button>
+          </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="filters-panel" id="filtersPanel">
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label>Département</label>
+              <select id="filterDepartment">
+                <option value="">Tous les départements</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Statut</label>
+              <select id="filterStatus">
+                <option value="">Tous les statuts</option>
+                <option value="Actif">Actif</option>
+                <option value="Inactif">Inactif</option>
+                <option value="Congé">En congé</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Salaire min</label>
+              <input type="number" id="filterSalaryMin" placeholder="0">
+            </div>
+            <div class="filter-group">
+              <label>Salaire max</label>
+              <input type="number" id="filterSalaryMax" placeholder="100000">
+            </div>
+            <div class="filter-actions">
+              <button onclick="applyFilters()" class="btn-primary">Appliquer</button>
+              <button onclick="clearFilters()" class="btn-secondary">Effacer</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-group">
+            <i class='bx bx-search'></i>
+            <input id="search" placeholder="Rechercher par nom, prénom, email ou poste..." />
+          </div>
+          <div class="toolbar-actions">
+            <button type="button" onclick="sortByName()"><i class='bx bx-sort-alt'></i> Nom</button>
+            <button type="button" onclick="sortBySalary()"><i class='bx bx-sort-alt'></i> Salaire</button>
+            <button type="button" onclick="sortByDate()"><i class='bx bx-sort-alt'></i> Date</button>
+            <button type="button" id="importRandomBtn"><i class='bx bx-user-plus'></i> Générer</button>
+            <button type="button" onclick="exportEmployees()"><i class='bx bx-download'></i> Exporter</button>
+            <button type="button" onclick="printEmployees()"><i class='bx bx-printer'></i> Imprimer</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="employees-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                <th>Photo</th>
+                <th>Nom Complet</th>
+                <th>Email</th>
+                <th>Poste</th>
+                <th>Département</th>
+                <th>Salaire</th>
+                <th>Statut</th>
+                <th>Date d'embauche</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeeList"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+          <button onclick="previousPage()" id="prevBtn">
+            <i class='bx bx-chevron-left'></i> Précédent
+          </button>
+          <div class="page-info">
+            <span id="pageInfo">Page 1 sur 1</span>
+          </div>
+          <button onclick="nextPage()" id="nextBtn">
+            Suivant <i class='bx bx-chevron-right'></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bulk Actions -->
+      <div class="bulk-actions" id="bulkActions" style="display: none;">
+        <div class="bulk-actions-content">
+          <span id="selectedCount">0 employé(s) sélectionné(s)</span>
+          <div class="bulk-buttons">
+            <button onclick="bulkDelete()" class="btn-danger">
+              <i class='bx bx-trash'></i> Supprimer
+            </button>
+            <button onclick="bulkExport()" class="btn-primary">
+              <i class='bx bx-download'></i> Exporter
+            </button>
+            <button onclick="bulkUpdateStatus()" class="btn-secondary">
+              <i class='bx bx-edit'></i> Modifier Statut
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- DEPARTMENTS -->
     <section id="departments" class="section">
       <div class="card">
-        <h3>Départements</h3>
+        <div class="card-header">
+          <h3><i class='bx bx-plus-circle'></i> Ajouter un département</h3>
+        </div>
 
-        <form id="deptForm" class="form-inline">
-          <input id="deptName" placeholder="Nom du département" required>
-          <button>Ajouter</button>
+        <form id="deptForm" class="department-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom du département *</label>
+              <input id="deptName" placeholder="Ex: Ressources Humaines" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="deptDesc" placeholder="Description du département" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Manager</label>
+              <select id="deptManager">
+                <option value="">Sélectionner un manager</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Budget annuel</label>
+              <input id="deptBudget" type="number" placeholder="Budget en MAD">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">
+              <i class='bx bx-plus'></i> Ajouter
+            </button>
+          </div>
         </form>
+      </div>
 
-        <ul id="deptList" class="list"></ul>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class='bx bx-list-ul'></i> Départements</h3>
+          <div class="header-actions">
+            <button onclick="exportDepartments()" class="btn-secondary">
+              <i class='bx bx-download'></i> Exporter
+            </button>
+          </div>
+        </div>
+        <div class="departments-grid" id="deptList"></div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section id="attendance" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class='bx bx-time'></i> Gestion des Présences</h3>
+          <div class="header-actions">
+            <input type="date" id="attendanceDate" value="">
+            <button onclick="markAttendance()" class="btn-primary">
+              <i class='bx bx-check'></i> Pointer
+            </button>
+          </div>
+        </div>
+
+        <div class="attendance-summary">
+          <div class="summary-card present">
+            <i class='bx bx-check-circle'></i>
+            <div>
+              <span>Présents</span>
+              <strong id="presentCount">0</strong>
+            </div>
+          </div>
+          <div class="summary-card absent">
+            <i class='bx bx-x-circle'></i>
+            <div>
+              <span>Absents</span>
+              <strong id="absentCount">0</strong>
+            </div>
+          </div>
+          <div class="summary-card late">
+            <i class='bx bx-time'></i>
+            <div>
+              <span>En retard</span>
+              <strong id="lateCount">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="attendance-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Employé</th>
+                <th>Département</th>
+                <th>Heure d'arrivée</th>
+                <th>Heure de départ</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceList"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAYROLL -->
+    <section id="payroll" class="section">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class='bx bx-money'></i> Gestion de la Paie</h3>
+          <div class="header-actions">
+            <select id="payrollMonth">
+              <option value="">Sélectionner le mois</option>
+            </select>
+            <button onclick="generatePayroll()" class="btn-primary">
+              <i class='bx bx-calculator'></i> Générer Paie
+            </button>
+          </div>
+        </div>
+
+        <div class="payroll-summary">
+          <div class="summary-card">
+            <i class='bx bx-money'></i>
+            <div>
+              <span>Masse salariale totale</span>
+              <strong id="totalPayroll">0 MAD</strong>
+            </div>
+          </div>
+          <div class="summary-card">
+            <i class='bx bx-receipt'></i>
+            <div>
+              <span>Fiches de paie</span>
+              <strong id="payslipCount">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="payroll-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Employé</th>
+                <th>Salaire de base</th>
+                <th>Primes</th>
+                <th>Déductions</th>
+                <th>Net à payer</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="payrollList"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="reports" class="section">
+      <div class="reports-header">
+        <h2>Rapports et Analyses</h2>
+        <div class="report-filters">
+          <select id="reportPeriod">
+            <option value="month">Ce mois</option>
+            <option value="quarter">Ce trimestre</option>
+            <option value="year">Cette année</option>
+          </select>
+          <button onclick="generateReport()" class="btn-primary">
+            <i class='bx bx-bar-chart'></i> Générer
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card success">
+          <i class='bx bx-trending-up'></i>
+          <div>
+            <span>Salaire max</span>
+            <strong id="reportMaxSalary">0 MAD</strong>
+          </div>
+        </div>
+
+        <div class="kpi-card danger">
+          <i class='bx bx-trending-down'></i>
+          <div>
+            <span>Salaire min</span>
+            <strong id="reportMinSalary">0 MAD</strong>
+          </div>
+        </div>
+
+        <div class="kpi-card primary">
+          <i class='bx bx-calculator'></i>
+          <div>
+            <span>Total masse salariale</span>
+            <strong id="reportTotalSalary">0 MAD</strong>
+          </div>
+        </div>
+
+        <div class="kpi-card warning">
+          <i class='bx bx-user-check'></i>
+          <div>
+            <span>Taux de présence</span>
+            <strong id="attendanceRate">95%</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class='bx bx-bar-chart'></i> Salaires par Poste</h3>
+            <div class="card-actions">
+              <button onclick="exportChart('postChart')"><i class='bx bx-download'></i></button>
+            </div>
+          </div>
+          <canvas id="postChart"></canvas>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class='bx bx-line-chart'></i> Évolution des Effectifs</h3>
+            <div class="card-actions">
+              <button onclick="exportChart('staffEvolutionChart')"><i class='bx bx-download'></i></button>
+            </div>
+          </div>
+          <canvas id="staffEvolutionChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="section">
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class='bx bx-palette'></i> Apparence</h3>
+          </div>
+          <div class="settings-content">
+            <div class="setting-item">
+              <label>Thème</label>
+              <select id="themeSelect" onchange="changeTheme(this.value)">
+                <option value="dark">Sombre</option>
+                <option value="light">Clair</option>
+                <option value="auto">Automatique</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Langue</label>
+              <select id="languageSelect">
+                <option value="fr">Français</option>
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class='bx bx-data'></i> Données</h3>
+          </div>
+          <div class="settings-content">
+            <div class="setting-item">
+              <button onclick="exportAllData()" class="btn-primary full-width">
+                <i class='bx bx-download'></i> Exporter toutes les données
+              </button>
+            </div>
+            <div class="setting-item">
+              <button onclick="importData()" class="btn-secondary full-width">
+                <i class='bx bx-upload'></i> Importer des données
+              </button>
+            </div>
+            <div class="setting-item">
+              <button onclick="clearAllData()" class="btn-danger full-width">
+                <i class='bx bx-trash'></i> Effacer toutes les données
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class='bx bx-bell'></i> Notifications</h3>
+          </div>
+          <div class="settings-content">
+            <div class="setting-item">
+              <label class="switch">
+                <input type="checkbox" id="emailNotifications" checked>
+                <span class="slider"></span>
+                Notifications par email
+              </label>
+            </div>
+            <div class="setting-item">
+              <label class="switch">
+                <input type="checkbox" id="pushNotifications" checked>
+                <span class="slider"></span>
+                Notifications push
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
   </div>
 </div>
 
-<script src="js/app.js"></script>
+<!-- Modals -->
+<div id="employeeModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Détails de l'employé</h3>
+      <button onclick="closeModal('employeeModal')" class="close-btn">
+        <i class='bx bx-x'></i>
+      </button>
+    </div>
+    <div class="modal-body" id="employeeModalBody">
+      <!-- Employee details will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<script src="js/sample-data.js"></script>
+<script src="js/app-enhanced.js"></script>
+<script src="js/enhanced-interactions.js"></script>
 <script src="js/employees.js"></script>
 <script src="js/departements.js"></script>
 <script src="js/dashboard.js"></script>
+<script src="js/attendance.js"></script>
+<script src="js/payroll.js"></script>
+<script src="js/settings.js"></script>
 
 </body>
 </html>

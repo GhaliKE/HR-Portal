@@ -3,20 +3,17 @@ const dashboardState = {
   deptChart: null,
   postChart: null
 };
-
 function getStoredData() {
   const employees = JSON.parse(localStorage.getItem('employees')) || [];
   const departments = JSON.parse(localStorage.getItem('departments')) || [];
   return { employees, departments };
 }
-
 function buildStats() {
   const { employees, departments } = getStoredData();
   let totalSalary = 0;
   let maxSalary = 0;
   let minSalary = employees.length ? Infinity : 0;
   const posts = new Set();
-
   employees.forEach(emp => {
     const salary = Number(emp.salaire) || 0;
     totalSalary += salary;
@@ -24,18 +21,14 @@ function buildStats() {
     minSalary = Math.min(minSalary, salary);
     posts.add(emp.poste);
   });
-
   const avgSalary = employees.length ? Math.round(totalSalary / employees.length) : 0;
-
   const salaryLabels = employees.map(e => `${e.prenom} ${e.nom}`);
   const salaryValues = employees.map(e => Number(e.salaire) || 0);
-
   const deptCounts = employees.reduce((acc, emp) => {
     const key = emp.department || 'Non assigné';
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
-
   const postTotals = {};
   const postCounts = {};
   employees.forEach(emp => {
@@ -43,12 +36,10 @@ function buildStats() {
     postTotals[post] = (postTotals[post] || 0) + (Number(emp.salaire) || 0);
     postCounts[post] = (postCounts[post] || 0) + 1;
   });
-
   const postLabels = Object.keys(postTotals);
   const postAverages = postLabels.map(label => {
     return postCounts[label] ? Math.round(postTotals[label] / postCounts[label]) : 0;
   });
-
   return {
     employees,
     departments,
@@ -71,34 +62,28 @@ function buildStats() {
     }
   };
 }
-
 function renderKPIs(kpi) {
   document.getElementById('kpiEmployees').textContent = kpi.employees;
   document.getElementById('kpiSalary').textContent = `${kpi.avgSalary.toLocaleString()} MAD`;
   document.getElementById('kpiPosts').textContent = kpi.posts;
   document.getElementById('kpiDepts').textContent = kpi.departments;
-
   document.getElementById('reportMaxSalary').textContent = `${kpi.maxSalary.toLocaleString()} MAD`;
   document.getElementById('reportMinSalary').textContent = `${kpi.minSalary.toLocaleString()} MAD`;
   document.getElementById('reportTotalSalary').textContent = `${kpi.totalSalary.toLocaleString()} MAD`;
 }
-
 function destroyChart(chartRef) {
   if (chartRef) {
     chartRef.destroy();
   }
 }
-
 function renderSalaryChart({ salaryLabels, salaryValues }) {
   const ctx = document.getElementById('salaryChart');
   if (!ctx) return;
-
   destroyChart(dashboardState.salaryChart);
   if (salaryValues.length === 0) {
     dashboardState.salaryChart = null;
     return;
   }
-
   dashboardState.salaryChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -141,17 +126,14 @@ function renderSalaryChart({ salaryLabels, salaryValues }) {
     }
   });
 }
-
 function renderDeptChart({ deptLabels, deptValues }) {
   const ctx = document.getElementById('deptChart');
   if (!ctx) return;
-
   destroyChart(dashboardState.deptChart);
   if (deptValues.length === 0) {
     dashboardState.deptChart = null;
     return;
   }
-
   dashboardState.deptChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -188,17 +170,14 @@ function renderDeptChart({ deptLabels, deptValues }) {
     }
   });
 }
-
 function renderPostChart({ postLabels, postAverages }) {
   const ctx = document.getElementById('postChart');
   if (!ctx) return;
-
   destroyChart(dashboardState.postChart);
   if (postAverages.length === 0) {
     dashboardState.postChart = null;
     return;
   }
-
   dashboardState.postChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -229,7 +208,6 @@ function renderPostChart({ postLabels, postAverages }) {
     }
   });
 }
-
 function renderDashboard() {
   const { kpi, charts } = buildStats();
   renderKPIs(kpi);
@@ -237,12 +215,9 @@ function renderDashboard() {
   renderDeptChart(charts);
   renderPostChart(charts);
 }
-
 window.refreshDashboard = () => {
   renderDashboard();
 };
-
 document.addEventListener('DOMContentLoaded', () => {
   refreshDashboard();
 });
-

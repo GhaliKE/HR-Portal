@@ -1,8 +1,6 @@
-// Enhanced Interactive Functions
 function toggleEmployeeForm() {
   const form = document.getElementById('employeeForm');
   const button = document.querySelector('.toggle-btn');
-  
   if (form.style.display === 'none' || !form.style.display) {
     form.style.display = 'block';
     form.style.animation = 'slideDown 0.3s ease';
@@ -15,31 +13,25 @@ function toggleEmployeeForm() {
     button.innerHTML = '<i class="bx bx-chevron-down"></i>';
   }
 }
-
 function resetEmployeeForm() {
   const form = document.getElementById('employeeForm');
   if (form) {
     form.reset();
-    // Add visual feedback
     const resetBtn = event.target;
     const originalText = resetBtn.innerHTML;
     resetBtn.innerHTML = '<i class="bx bx-check"></i> Réinitialisé';
     resetBtn.classList.add('animate-bounce');
-    
     setTimeout(() => {
       resetBtn.innerHTML = originalText;
       resetBtn.classList.remove('animate-bounce');
     }, 1500);
   }
 }
-
 function toggleFilters() {
   const panel = document.getElementById('filtersPanel');
   const button = event.target;
-  
   if (panel) {
     panel.classList.toggle('show');
-    
     if (panel.classList.contains('show')) {
       button.innerHTML = '<i class="bx bx-filter-alt"></i> Masquer Filtres';
       button.classList.add('active');
@@ -49,7 +41,6 @@ function toggleFilters() {
     }
   }
 }
-
 function applyFilters() {
   if (window.hrPortal) {
     const filters = {
@@ -58,23 +49,17 @@ function applyFilters() {
       salaryMin: parseFloat(document.getElementById('filterSalaryMin')?.value) || 0,
       salaryMax: parseFloat(document.getElementById('filterSalaryMax')?.value) || Infinity
     };
-    
     window.hrPortal.filters = filters;
     window.hrPortal.currentPage = 1;
-    
-    // Apply filters logic here
     renderFilteredEmployees(filters);
-    
     window.hrPortal.showNotification('Filtres appliqués', 'success');
   }
 }
-
 function clearFilters() {
   document.getElementById('filterDepartment').value = '';
   document.getElementById('filterStatus').value = '';
   document.getElementById('filterSalaryMin').value = '';
   document.getElementById('filterSalaryMax').value = '';
-  
   if (window.hrPortal) {
     window.hrPortal.filters = {};
     window.hrPortal.currentPage = 1;
@@ -82,38 +67,31 @@ function clearFilters() {
     window.hrPortal.showNotification('Filtres effacés', 'info');
   }
 }
-
 function renderFilteredEmployees(filters) {
   if (!window.hrPortal) return;
-  
   let filteredEmployees = window.hrPortal.employees.filter(emp => {
     const matchesDept = !filters.department || emp.department === filters.department;
     const matchesStatus = !filters.status || emp.statut === filters.status;
     const matchesSalaryMin = emp.salaire >= filters.salaryMin;
     const matchesSalaryMax = emp.salaire <= filters.salaryMax;
-    
     return matchesDept && matchesStatus && matchesSalaryMin && matchesSalaryMax;
   });
-  
   renderEmployeeTable(filteredEmployees);
   updatePagination(filteredEmployees.length);
 }
-
 function renderEmployeeTable(employees) {
   const tbody = document.getElementById('employeeList');
   if (!tbody) return;
-  
   const startIndex = (window.hrPortal.currentPage - 1) * window.hrPortal.itemsPerPage;
   const endIndex = startIndex + window.hrPortal.itemsPerPage;
   const pageEmployees = employees.slice(startIndex, endIndex);
-  
   tbody.innerHTML = pageEmployees.map(emp => `
     <tr data-employee-id="${emp.id}">
       <td>
         <input type="checkbox" class="employee-checkbox" value="${emp.id}" onchange="updateBulkActions()">
       </td>
       <td>
-        <img src="https://ui-avatars.com/api/?name=${emp.prenom}+${emp.nom}&background=3b82f6&color=fff&size=40" 
+        <img src="https:
              alt="${emp.prenom} ${emp.nom}" class="employee-photo">
       </td>
       <td><strong>${emp.prenom} ${emp.nom}</strong></td>
@@ -143,73 +121,58 @@ function renderEmployeeTable(employees) {
     </tr>
   `).join('');
 }
-
 function updatePagination(totalItems) {
   const totalPages = Math.ceil(totalItems / window.hrPortal.itemsPerPage);
   const pageInfo = document.getElementById('pageInfo');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
-  
   if (pageInfo) {
     pageInfo.textContent = `Page ${window.hrPortal.currentPage} sur ${totalPages}`;
   }
-  
   if (prevBtn) {
     prevBtn.disabled = window.hrPortal.currentPage <= 1;
   }
-  
   if (nextBtn) {
     nextBtn.disabled = window.hrPortal.currentPage >= totalPages;
   }
 }
-
 function previousPage() {
   if (window.hrPortal && window.hrPortal.currentPage > 1) {
     window.hrPortal.currentPage--;
     applyFilters();
   }
 }
-
 function nextPage() {
   const totalItems = getFilteredEmployees().length;
   const totalPages = Math.ceil(totalItems / window.hrPortal.itemsPerPage);
-  
   if (window.hrPortal && window.hrPortal.currentPage < totalPages) {
     window.hrPortal.currentPage++;
     applyFilters();
   }
 }
-
 function getFilteredEmployees() {
   if (!window.hrPortal) return [];
-  
   const filters = window.hrPortal.filters || {};
   return window.hrPortal.employees.filter(emp => {
     const matchesDept = !filters.department || emp.department === filters.department;
     const matchesStatus = !filters.status || emp.statut === filters.status;
     const matchesSalaryMin = emp.salaire >= (filters.salaryMin || 0);
     const matchesSalaryMax = emp.salaire <= (filters.salaryMax || Infinity);
-    
     return matchesDept && matchesStatus && matchesSalaryMin && matchesSalaryMax;
   });
 }
-
 function toggleSelectAll() {
   const selectAll = document.getElementById('selectAll');
   const checkboxes = document.querySelectorAll('.employee-checkbox');
-  
   checkboxes.forEach(checkbox => {
     checkbox.checked = selectAll.checked;
   });
-  
   updateBulkActions();
 }
-
 function updateBulkActions() {
   const checkboxes = document.querySelectorAll('.employee-checkbox:checked');
   const bulkActions = document.getElementById('bulkActions');
   const selectedCount = document.getElementById('selectedCount');
-  
   if (checkboxes.length > 0) {
     bulkActions.style.display = 'block';
     selectedCount.textContent = `${checkboxes.length} employé(s) sélectionné(s)`;
@@ -217,11 +180,9 @@ function updateBulkActions() {
     bulkActions.style.display = 'none';
   }
 }
-
 function bulkDelete() {
   const checkboxes = document.querySelectorAll('.employee-checkbox:checked');
   const employeeIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-  
   if (confirm(`Êtes-vous sûr de vouloir supprimer ${employeeIds.length} employé(s) ?`)) {
     if (window.hrPortal) {
       window.hrPortal.employees = window.hrPortal.employees.filter(emp => !employeeIds.includes(emp.id));
@@ -232,11 +193,9 @@ function bulkDelete() {
     }
   }
 }
-
 function bulkExport() {
   const checkboxes = document.querySelectorAll('.employee-checkbox:checked');
   const employeeIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-  
   if (window.hrPortal) {
     const selectedEmployees = window.hrPortal.employees.filter(emp => employeeIds.includes(emp.id));
     const data = JSON.stringify(selectedEmployees, null, 2);
@@ -247,15 +206,12 @@ function bulkExport() {
     a.download = `employees-selection-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    
     window.hrPortal.showNotification(`${employeeIds.length} employé(s) exporté(s)`, 'success');
   }
 }
-
 function bulkUpdateStatus() {
   const checkboxes = document.querySelectorAll('.employee-checkbox:checked');
   const employeeIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-  
   const newStatus = prompt('Nouveau statut (Actif/Inactif/Congé):');
   if (newStatus && ['Actif', 'Inactif', 'Congé'].includes(newStatus)) {
     if (window.hrPortal) {
@@ -264,7 +220,6 @@ function bulkUpdateStatus() {
           emp.statut = newStatus;
         }
       });
-      
       window.hrPortal.saveData();
       applyFilters();
       updateBulkActions();
@@ -272,17 +227,15 @@ function bulkUpdateStatus() {
     }
   }
 }
-
 function viewEmployee(id) {
   const employee = window.hrPortal?.employees.find(emp => emp.id === id);
   if (employee) {
     const modal = document.getElementById('employeeModal');
     const modalBody = document.getElementById('employeeModalBody');
-    
     modalBody.innerHTML = `
       <div class="employee-details">
         <div class="employee-header">
-          <img src="https://ui-avatars.com/api/?name=${employee.prenom}+${employee.nom}&background=3b82f6&color=fff&size=80" 
+          <img src="https:
                alt="${employee.prenom} ${employee.nom}" class="employee-photo-large">
           <div>
             <h3>${employee.prenom} ${employee.nom}</h3>
@@ -292,7 +245,6 @@ function viewEmployee(id) {
             </span>
           </div>
         </div>
-        
         <div class="employee-info-grid">
           <div class="info-item">
             <label>Email</label>
@@ -321,17 +273,14 @@ function viewEmployee(id) {
         </div>
       </div>
     `;
-    
     modal.classList.add('show');
   }
 }
-
 function editEmployee(id) {
   if (window.hrPortal) {
     window.hrPortal.showNotification('Fonction d\'édition en cours de développement', 'info');
   }
 }
-
 function deleteEmployee(id) {
   const employee = window.hrPortal?.employees.find(emp => emp.id === id);
   if (employee && confirm(`Êtes-vous sûr de vouloir supprimer ${employee.prenom} ${employee.nom} ?`)) {
@@ -343,14 +292,12 @@ function deleteEmployee(id) {
     }
   }
 }
-
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.remove('show');
   }
 }
-
 function sortByName() {
   if (window.hrPortal) {
     window.hrPortal.employees.sort((a, b) => {
@@ -358,13 +305,11 @@ function sortByName() {
       const nameB = `${b.prenom} ${b.nom}`.toLowerCase();
       return nameA.localeCompare(nameB);
     });
-    
     window.hrPortal.saveData();
     applyFilters();
     window.hrPortal.showNotification('Trié par nom', 'info');
   }
 }
-
 function sortBySalary() {
   if (window.hrPortal) {
     window.hrPortal.employees.sort((a, b) => b.salaire - a.salaire);
@@ -373,7 +318,6 @@ function sortBySalary() {
     window.hrPortal.showNotification('Trié par salaire', 'info');
   }
 }
-
 function sortByDate() {
   if (window.hrPortal) {
     window.hrPortal.employees.sort((a, b) => {
@@ -381,13 +325,11 @@ function sortByDate() {
       const dateB = new Date(b.dateEmbauche || '1970-01-01');
       return dateB - dateA;
     });
-    
     window.hrPortal.saveData();
     applyFilters();
     window.hrPortal.showNotification('Trié par date d\'embauche', 'info');
   }
 }
-
 function exportEmployees() {
   if (window.hrPortal) {
     const data = JSON.stringify(window.hrPortal.employees, null, 2);
@@ -398,30 +340,21 @@ function exportEmployees() {
     a.download = `employees-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    
     window.hrPortal.showNotification('Liste des employés exportée', 'success');
   }
 }
-
 function printEmployees() {
   window.print();
 }
-
-// Initialize enhanced features when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize filters panel as hidden
   const filtersPanel = document.getElementById('filtersPanel');
   if (filtersPanel) {
     filtersPanel.style.display = 'none';
   }
-  
-  // Initialize employee form as collapsed
   const employeeForm = document.getElementById('employeeForm');
   if (employeeForm) {
     employeeForm.style.display = 'none';
   }
-  
-  // Add click outside modal to close
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
       e.target.classList.remove('show');

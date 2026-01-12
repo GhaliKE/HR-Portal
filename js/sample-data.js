@@ -1,15 +1,8 @@
-// Sample Data Generator for HR Portal
-// Add this to index.html as <script src="js/sample-data.js"></script> if needed
-// Or run in browser console: localStorage.clear(); location.reload();
-
 function initializeSampleData() {
-  // Check if data already exists
   if (localStorage.getItem('employees')) {
     console.log('Data already exists. Skipping sample data.');
     return;
   }
-
-  // Sample Departments
   const departments = [
     { name: "Informatique", description: "Département IT - Développement et Infrastructure" },
     { name: "Ressources Humaines", description: "Gestion du personnel et recrutement" },
@@ -17,8 +10,6 @@ function initializeSampleData() {
     { name: "Design", description: "Design UX/UI et créatif" },
     { name: "Finance", description: "Comptabilité et gestion financière" }
   ];
-
-  // Sample Employees
   const employees = [
     {
       id: 1704268800000,
@@ -111,22 +102,16 @@ function initializeSampleData() {
       department: "Design"
     }
   ];
-
-  // Save to LocalStorage
   localStorage.setItem('departments', JSON.stringify(departments));
   localStorage.setItem('employees', JSON.stringify(employees));
-  
   console.log('✅ Sample data initialized!');
   console.log(`   - ${departments.length} departments created`);
   console.log(`   - ${employees.length} employees created`);
 }
-
-// Run on load
 document.addEventListener('DOMContentLoaded', () => {
-  // Only initialize if localStorage is empty
   if (!localStorage.getItem('employees')) {
     console.log('Initializing sample data...');
     initializeSampleData();
-    location.reload(); // Refresh to show data
+    location.reload(); 
   }
 });

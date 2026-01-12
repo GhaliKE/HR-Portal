@@ -1,16 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-
   let departments = JSON.parse(localStorage.getItem('departments')) || [];
-
   const form = document.getElementById('deptForm');
   const list = document.getElementById('deptList');
-
   function refreshDashboardSafely() {
     if (typeof window.refreshDashboard === 'function') {
       window.refreshDashboard();
     }
   }
-
   function renderDepartments() {
     list.innerHTML = '';
     if (departments.length === 0) {
@@ -30,19 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     updateDeptCount();
   }
-
   form.addEventListener('submit', e => {
     e.preventDefault();
     const newDept = {
       name: deptName.value.trim(),
       description: deptDesc.value.trim()
     };
-    
     if (departments.some(d => d.name.toLowerCase() === newDept.name.toLowerCase())) {
       alert('Ce département existe déjà !');
       return;
     }
-
     departments.push(newDept);
     localStorage.setItem('departments', JSON.stringify(departments));
     renderDepartments();
@@ -50,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateEmployeeDeptDropdown();
     refreshDashboardSafely();
   });
-
   window.deleteDept = index => {
     if (confirm(`Êtes-vous sûr de vouloir supprimer le département "${departments[index].name}" ?`)) {
       departments.splice(index, 1);
@@ -60,11 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshDashboardSafely();
     }
   };
-
   function updateDeptCount() {
     document.getElementById('kpiDepts').textContent = departments.length;
   }
-
   function updateEmployeeDeptDropdown() {
     const deptSelect = document.getElementById('department');
     if (deptSelect) {
@@ -77,8 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
-
   renderDepartments();
   refreshDashboardSafely();
 });
-

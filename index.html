@@ -4,44 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HR Portal - Gestion des Ressources Humaines</title>
-
-  <!-- Icons -->
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  
-  <!-- Modern Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- Date Picker -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
-<!-- Loading Screen -->
 <div id="loadingScreen" class="loading-screen">
   <div class="loading-spinner"></div>
   <p>Chargement du portail RH...</p>
 </div>
-
-<!-- Notification Container -->
 <div id="notificationContainer" class="notification-container"></div>
-
 <div class="layout">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="logo">
       <i class='bx bx-briefcase'></i>
       <span>HR Portal</span>
     </div>
-
     <nav>
       <a onclick="showSection('dashboard')" class="active">
         <i class='bx bx-grid-alt'></i>
@@ -73,19 +54,13 @@
         <span>Paramètres</span>
       </a>
     </nav>
-
-    <!-- Theme Toggle -->
     <div class="theme-toggle">
       <button onclick="toggleTheme()" id="themeToggle">
         <i class='bx bx-moon'></i>
       </button>
     </div>
   </aside>
-
-  <!-- MAIN -->
   <div class="main">
-
-    <!-- TOPBAR -->
     <header class="topbar">
       <div class="topbar-left">
         <button class="sidebar-toggle" onclick="toggleSidebar()">
@@ -93,13 +68,11 @@
         </button>
         <h2 id="pageTitle">Dashboard</h2>
       </div>
-      
       <div class="topbar-right">
         <div class="search-box">
           <i class='bx bx-search'></i>
           <input type="text" placeholder="Recherche globale..." id="globalSearch">
         </div>
-        
         <div class="notifications">
           <button class="notification-btn" onclick="toggleNotifications()">
             <i class='bx bx-bell'></i>
@@ -121,7 +94,6 @@
             </div>
           </div>
         </div>
-        
         <div class="user-profile">
           <img src="https://via.placeholder.com/40" alt="Profile">
           <div class="user-info">
@@ -131,10 +103,7 @@
         </div>
       </div>
     </header>
-
-    <!-- DASHBOARD -->
     <section id="dashboard" class="section active">
-      <!-- Quick Actions -->
       <div class="quick-actions">
         <button class="quick-action" onclick="showSection('employees'); document.getElementById('employeeForm').scrollIntoView();">
           <i class='bx bx-user-plus'></i>
@@ -153,8 +122,6 @@
           <span>Voir Rapports</span>
         </button>
       </div>
-
-      <!-- Enhanced KPI Grid -->
       <div class="kpi-grid">
         <div class="kpi-card primary">
           <i class='bx bx-user'></i>
@@ -164,7 +131,6 @@
             <small class="trend positive">+5% ce mois</small>
           </div>
         </div>
-
         <div class="kpi-card success">
           <i class='bx bx-money'></i>
           <div>
@@ -173,7 +139,6 @@
             <small class="trend neutral">Stable</small>
           </div>
         </div>
-
         <div class="kpi-card warning">
           <i class='bx bx-briefcase'></i>
           <div>
@@ -182,7 +147,6 @@
             <small class="trend positive">+2 nouveaux</small>
           </div>
         </div>
-
         <div class="kpi-card info">
           <i class='bx bx-building'></i>
           <div>
@@ -191,7 +155,6 @@
             <small class="trend neutral">Inchangé</small>
           </div>
         </div>
-
         <div class="kpi-card accent">
           <i class='bx bx-time'></i>
           <div>
@@ -200,7 +163,6 @@
             <small class="trend positive">95% taux</small>
           </div>
         </div>
-
         <div class="kpi-card danger">
           <i class='bx bx-user-x'></i>
           <div>
@@ -210,8 +172,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Charts Grid -->
       <div class="charts-grid">
         <div class="card chart-card">
           <div class="card-header">
@@ -223,7 +183,6 @@
           </div>
           <canvas id="salaryChart"></canvas>
         </div>
-
         <div class="card chart-card">
           <div class="card-header">
             <h3><i class='bx bx-pie-chart-alt'></i> Répartition Départements</h3>
@@ -234,7 +193,6 @@
           </div>
           <canvas id="deptChart"></canvas>
         </div>
-
         <div class="card chart-card">
           <div class="card-header">
             <h3><i class='bx bx-trending-up'></i> Évolution Effectifs</h3>
@@ -245,7 +203,6 @@
           </div>
           <canvas id="evolutionChart"></canvas>
         </div>
-
         <div class="card chart-card">
           <div class="card-header">
             <h3><i class='bx bx-calendar'></i> Présence Hebdomadaire</h3>
@@ -257,8 +214,6 @@
           <canvas id="attendanceChart"></canvas>
         </div>
       </div>
-
-      <!-- Recent Activities -->
       <div class="card">
         <div class="card-header">
           <h3><i class='bx bx-history'></i> Activités Récentes</h3>
@@ -298,8 +253,6 @@
         </div>
       </div>
     </section>
-
-    <!-- EMPLOYEES -->
     <section id="employees" class="section">
       <div class="card">
         <div class="card-header">
@@ -308,7 +261,6 @@
             <i class='bx bx-chevron-down'></i>
           </button>
         </div>
-
         <form id="employeeForm" class="employee-form">
           <div class="form-section">
             <h4>Informations Personnelles</h4>
@@ -339,7 +291,6 @@
               </div>
             </div>
           </div>
-
           <div class="form-section">
             <h4>Informations Professionnelles</h4>
             <div class="form-grid">
@@ -380,7 +331,6 @@
               </div>
             </div>
           </div>
-
           <div class="form-actions">
             <button type="button" onclick="resetEmployeeForm()" class="btn-secondary">
               <i class='bx bx-refresh'></i> Réinitialiser
@@ -391,7 +341,6 @@
           </div>
         </form>
       </div>
-
       <div class="card">
         <div class="card-header">
           <h3><i class='bx bx-list-ul'></i> Liste des employés</h3>
@@ -402,8 +351,6 @@
             </button>
           </div>
         </div>
-
-        <!-- Advanced Filters -->
         <div class="filters-panel" id="filtersPanel">
           <div class="filters-grid">
             <div class="filter-group">
@@ -435,7 +382,6 @@
             </div>
           </div>
         </div>
-
         <div class="toolbar">
           <div class="search-group">
             <i class='bx bx-search'></i>
@@ -450,7 +396,6 @@
             <button type="button" onclick="printEmployees()"><i class='bx bx-printer'></i> Imprimer</button>
           </div>
         </div>
-
         <div class="table-container">
           <table class="employees-table">
             <thead>
@@ -470,8 +415,6 @@
             <tbody id="employeeList"></tbody>
           </table>
         </div>
-
-        <!-- Pagination -->
         <div class="pagination" id="pagination">
           <button onclick="previousPage()" id="prevBtn">
             <i class='bx bx-chevron-left'></i> Précédent
@@ -484,8 +427,6 @@
           </button>
         </div>
       </div>
-
-      <!-- Bulk Actions -->
       <div class="bulk-actions" id="bulkActions" style="display: none;">
         <div class="bulk-actions-content">
           <span id="selectedCount">0 employé(s) sélectionné(s)</span>
@@ -503,14 +444,11 @@
         </div>
       </div>
     </section>
-
-    <!-- DEPARTMENTS -->
     <section id="departments" class="section">
       <div class="card">
         <div class="card-header">
           <h3><i class='bx bx-plus-circle'></i> Ajouter un département</h3>
         </div>
-
         <form id="deptForm" class="department-form">
           <div class="form-grid">
             <div class="form-group">
@@ -539,7 +477,6 @@
           </div>
         </form>
       </div>
-
       <div class="card">
         <div class="card-header">
           <h3><i class='bx bx-list-ul'></i> Départements</h3>
@@ -552,8 +489,6 @@
         <div class="departments-grid" id="deptList"></div>
       </div>
     </section>
-
-    <!-- ATTENDANCE -->
     <section id="attendance" class="section">
       <div class="card">
         <div class="card-header">
@@ -565,7 +500,6 @@
             </button>
           </div>
         </div>
-
         <div class="attendance-summary">
           <div class="summary-card present">
             <i class='bx bx-check-circle'></i>
@@ -589,7 +523,6 @@
             </div>
           </div>
         </div>
-
         <div class="attendance-table">
           <table>
             <thead>
@@ -607,8 +540,6 @@
         </div>
       </div>
     </section>
-
-    <!-- PAYROLL -->
     <section id="payroll" class="section">
       <div class="card">
         <div class="card-header">
@@ -622,7 +553,6 @@
             </button>
           </div>
         </div>
-
         <div class="payroll-summary">
           <div class="summary-card">
             <i class='bx bx-money'></i>
@@ -639,7 +569,6 @@
             </div>
           </div>
         </div>
-
         <div class="payroll-table">
           <table>
             <thead>
@@ -657,8 +586,6 @@
         </div>
       </div>
     </section>
-
-    <!-- REPORTS -->
     <section id="reports" class="section">
       <div class="reports-header">
         <h2>Rapports et Analyses</h2>
@@ -673,7 +600,6 @@
           </button>
         </div>
       </div>
-
       <div class="kpi-grid">
         <div class="kpi-card success">
           <i class='bx bx-trending-up'></i>
@@ -682,7 +608,6 @@
             <strong id="reportMaxSalary">0 MAD</strong>
           </div>
         </div>
-
         <div class="kpi-card danger">
           <i class='bx bx-trending-down'></i>
           <div>
@@ -690,7 +615,6 @@
             <strong id="reportMinSalary">0 MAD</strong>
           </div>
         </div>
-
         <div class="kpi-card primary">
           <i class='bx bx-calculator'></i>
           <div>
@@ -698,7 +622,6 @@
             <strong id="reportTotalSalary">0 MAD</strong>
           </div>
         </div>
-
         <div class="kpi-card warning">
           <i class='bx bx-user-check'></i>
           <div>
@@ -707,7 +630,6 @@
           </div>
         </div>
       </div>
-
       <div class="charts-grid">
         <div class="card chart-card">
           <div class="card-header">
@@ -718,7 +640,6 @@
           </div>
           <canvas id="postChart"></canvas>
         </div>
-
         <div class="card chart-card">
           <div class="card-header">
             <h3><i class='bx bx-line-chart'></i> Évolution des Effectifs</h3>
@@ -730,8 +651,6 @@
         </div>
       </div>
     </section>
-
-    <!-- SETTINGS -->
     <section id="settings" class="section">
       <div class="settings-grid">
         <div class="card">
@@ -757,7 +676,6 @@
             </div>
           </div>
         </div>
-
         <div class="card">
           <div class="card-header">
             <h3><i class='bx bx-data'></i> Données</h3>
@@ -780,7 +698,6 @@
             </div>
           </div>
         </div>
-
         <div class="card">
           <div class="card-header">
             <h3><i class='bx bx-bell'></i> Notifications</h3>
@@ -804,11 +721,8 @@
         </div>
       </div>
     </section>
-
   </div>
 </div>
-
-<!-- Modals -->
 <div id="employeeModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -818,11 +732,9 @@
       </button>
     </div>
     <div class="modal-body" id="employeeModalBody">
-      <!-- Employee details will be loaded here -->
     </div>
   </div>
 </div>
-
 <script src="js/sample-data.js"></script>
 <script src="js/app-enhanced.js"></script>
 <script src="js/enhanced-interactions.js"></script>
@@ -832,6 +744,5 @@
 <script src="js/attendance.js"></script>
 <script src="js/payroll.js"></script>
 <script src="js/settings.js"></script>
-
 </body>
 </html>

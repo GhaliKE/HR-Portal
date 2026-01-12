@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalText = importBtn.innerHTML;
     importBtn.innerHTML = "<i class='bx bx-loader bx-spin'></i> Importation...";
     try {
-      const response = await fetch(`https:
+      const response = await fetch(`https://randomuser.me/api/?results=${count}&nat=fr,us,gb&inc=name,email,login`);
       if (!response.ok) {
         throw new Error('Échec de la récupération des profils');
       }

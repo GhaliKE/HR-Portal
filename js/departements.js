@@ -41,14 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDepartments();
     form.reset();
     updateEmployeeDeptDropdown();
+    if (window.hrPortal) {
+      window.hrPortal.addActivity(`Nouveau département créé: ${newDept.name}`, 'success');
+    }
     refreshDashboardSafely();
   });
   window.deleteDept = index => {
     if (confirm(`Êtes-vous sûr de vouloir supprimer le département "${departments[index].name}" ?`)) {
+      const deptName = departments[index].name;
       departments.splice(index, 1);
       localStorage.setItem('departments', JSON.stringify(departments));
       renderDepartments();
       updateEmployeeDeptDropdown();
+      if (window.hrPortal) {
+        window.hrPortal.addActivity(`Département supprimé: ${deptName}`, 'warning');
+      }
       refreshDashboardSafely();
     }
   };

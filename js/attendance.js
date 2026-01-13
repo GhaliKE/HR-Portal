@@ -129,6 +129,142 @@ function editAttendance(recordId) {
     window.hrPortal.showNotification('Fonction d\'édition en cours de développement', 'info');
   }
 }
+
+let attendanceChartInstance = null;
+
+function renderAttendanceChart() {
+  const ctx = document.getElementById('attendanceChart');
+  if (!ctx) return;
+
+  if (attendanceChartInstance) {
+    attendanceChartInstance.destroy();
+  }
+
+  const attendanceData = JSON.parse(localStorage.getItem('attendance')) || [];
+  const last7Days = getLast7Days();
+  
+  const dailyStats = last7Days.map(date => {
+    const dayRecords = attendanceData.filter(r => r.date === date);
+    return {
+      date: formatDate(date),
+      present: dayRecords.filter(r => r.isPresent).length,
+      absent: dayRecords.filter(r => !r.isPresent).length,
+      late: dayRecords.filter(r => r.status === 'En retard' || r.status === 'Très en retard').length
+    };
+  });
+
+  attendanceChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dailyStats.map(d => d.date),
+      datasets: [
+        {
+          label: 'Présents',
+          data: dailyStats.map(d => d.present),
+          borderColor: 'rgb(16, 185, 129)',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: 'rgb(16, 185, 129)',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        },
+        {
+          label: 'Absents',
+          data: dailyStats.map(d => d.absent),
+          borderColor: 'rgb(239, 68, 68)',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          tension: 0.4,
+          fill: false,
+          pointBackgroundColor: 'rgb(239, 68, 68)',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        },
+        {
+          label: 'En retard',
+          data: dailyStats.map(d => d.late),
+          borderColor: 'rgb(245, 158, 11)',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          tension: 0.4,
+          fill: false,
+          pointBackgroundColor: 'rgb(245, 158, 11)',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#cbd5e1',
+            font: { size: 12 },
+            padding: 15
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#cbd5e1' },
+          grid: { color: 'rgba(71, 85, 105, 0.3)' }
+        },
+        x: {
+          ticks: { color: '#cbd5e1' },
+          grid: { color: 'rgba(71, 85, 105, 0.3)' }
+        }
+      }
+    }
+  });
+}
+
+function getLast7Days() {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    days.push(date.toISOString().split('T')[0]);
+  }
+  return days;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+  return days[date.getDay()] + ' ' + date.getDate();
+}
+
+function refreshChart(chartId) {
+  if (chartId === 'attendanceChart') {
+    renderAttendanceChart();
+  } else if (chartId === 'salaryChart' || chartId === 'deptChart' || chartId === 'evolutionChart' || chartId === 'postChart') {
+    if (typeof window.refreshDashboard === 'function') {
+      window.refreshDashboard();
+    }
+  } else if (chartId === 'staffEvolutionChart') {
+    if (typeof renderStaffEvolutionChart === 'function') {
+      renderStaffEvolutionChart();
+    } else if (typeof window.refreshDashboard === 'function') {
+      window.refreshDashboard();
+    }
+  }
+}
+
+function exportChart(chartId) {
+  const canvas = document.getElementById(chartId);
+  if (!canvas) {
+    console.error('Chart canvas not found:', chartId);
+    return;
+  }
+  const link = document.createElement('a');
+  link.href = canvas.toDataURL('image/png');
+  link.download = `${chartId}-${new Date().toISOString().split('T')[0]}.png`;
+  link.click();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   window.attendanceManager = new AttendanceManager();
+  renderAttendanceChart();
 });

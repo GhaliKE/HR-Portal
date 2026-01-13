@@ -24,12 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderEmployees(data = employees) {
     list.innerHTML = '';
     if (data.length === 0) {
-      list.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--muted);">Aucun employé trouvé</td></tr>';
+      list.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--muted);">Aucun employé trouvé</td></tr>';
       return;
     }
     data.forEach((emp, index) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
+        <td><input type="checkbox" class="employee-checkbox" data-index="${index}"></td>
         <td>${emp.nom}</td>
         <td>${emp.prenom}</td>
         <td>${emp.email}</td>
@@ -61,8 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
       employees[editIndex] = employee;
       editIndex = null;
       form.style.backgroundColor = '';
+      if (window.hrPortal) {
+        window.hrPortal.addActivity(`Employé modifié: ${employee.prenom} ${employee.nom}`, 'info');
+      }
     } else {
       employees.push(employee);
+      if (window.hrPortal) {
+        window.hrPortal.addActivity(`Nouvel employé ajouté: ${employee.prenom} ${employee.nom} au département ${employee.department}`, 'success');
+      }
     }
     localStorage.setItem('employees', JSON.stringify(employees));
     renderEmployees();
@@ -83,9 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   window.deleteEmployee = index => {
     if (confirm("Êtes-vous sûr de vouloir supprimer cet employé ?")) {
+      const deletedEmp = employees[index];
       employees.splice(index, 1);
       localStorage.setItem('employees', JSON.stringify(employees));
       renderEmployees();
+      if (window.hrPortal) {
+        window.hrPortal.addActivity(`Employé supprimé: ${deletedEmp.prenom} ${deletedEmp.nom}`, 'warning');
+      }
       refreshDashboardSafely();
     }
   };

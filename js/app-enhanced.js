@@ -4,6 +4,7 @@ class HRPortal {
     this.theme = localStorage.getItem('theme') || 'dark';
     this.employees = JSON.parse(localStorage.getItem('employees')) || [];
     this.departments = JSON.parse(localStorage.getItem('departments')) || [];
+    this.activities = JSON.parse(localStorage.getItem('activities')) || [];
     this.notifications = [];
     this.currentPage = 1;
     this.itemsPerPage = 10;
@@ -16,6 +17,8 @@ class HRPortal {
     this.loadSampleData();
     this.hideLoadingScreen();
     this.updateDashboard();
+    this.updateActivityList();
+    this.updateNotificationDropdown();
     this.showNotification('Bienvenue dans le portail RH!', 'success');
   }
   initTheme() {
@@ -67,6 +70,9 @@ class HRPortal {
   showNotification(message, type = 'info', duration = 5000) {
     const container = document.getElementById('notificationContainer');
     if (!container) return;
+    
+    this.addActivity(message, type);
+    
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.innerHTML = `
@@ -81,6 +87,108 @@ class HRPortal {
         notification.remove();
       }
     }, duration);
+  }
+
+  addActivity(message, type = 'info') {
+    const activity = {
+      id: Date.now(),
+      message: message,
+      type: type,
+      timestamp: new Date().toISOString()
+    };
+    
+    this.activities.unshift(activity);
+    
+    if (this.activities.length > 50) {
+      this.activities.pop();
+    }
+    
+    localStorage.setItem('activities', JSON.stringify(this.activities));
+    this.updateActivityList();
+    this.updateNotificationDropdown();
+  }
+
+  updateActivityList() {
+    const activityList = document.getElementById('activityList');
+    if (!activityList) return;
+
+    if (this.activities.length === 0) {
+      activityList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--muted);">Aucune activité</div>';
+      return;
+    }
+
+    const recent = this.activities.slice(0, 10);
+    activityList.innerHTML = recent.map(activity => {
+      const date = new Date(activity.timestamp);
+      const timeAgo = this.getTimeAgo(date);
+      const icons = {
+        success: 'bx-check-circle',
+        error: 'bx-x-circle',
+        warning: 'bx-alert-circle',
+        info: 'bx-info-circle'
+      };
+      const icon = icons[activity.type] || 'bx-info-circle';
+      
+      return `
+        <div class="activity-item">
+          <div class="activity-icon ${activity.type}">
+            <i class='bx ${icon}'></i>
+          </div>
+          <div class="activity-content">
+            <p><strong>${activity.message}</strong></p>
+            <small>${timeAgo}</small>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  updateNotificationDropdown() {
+    const notifList = document.querySelector('.notification-list');
+    if (!notifList) return;
+
+    const recent = this.activities.slice(0, 5);
+    if (recent.length === 0) {
+      notifList.innerHTML = '<div style="text-align: center; padding: 15px; color: var(--muted);">Aucune notification</div>';
+      return;
+    }
+
+    notifList.innerHTML = recent.map(activity => {
+      const date = new Date(activity.timestamp);
+      const timeAgo = this.getTimeAgo(date);
+      const icons = {
+        success: 'bx-check-circle',
+        error: 'bx-x-circle',
+        warning: 'bx-alert-circle',
+        info: 'bx-info-circle'
+      };
+      const icon = icons[activity.type] || 'bx-info-circle';
+
+      return `
+        <div class="notification-item">
+          <i class='bx ${icon}'></i>
+          <div>
+            <p>${activity.message}</p>
+            <span>${timeAgo}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 60) return `Il y a ${diffMins} minute${diffMins > 1 ? 's' : ''}`;
+    if (diffHours < 24) return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+    if (diffDays < 7) return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+    
+    return date.toLocaleDateString('fr-FR');
   }
   handleGlobalSearch(query) {
     if (!query.trim()) return;
@@ -233,6 +341,7 @@ function exportAllData() {
 }
 function refreshActivities() {
   if (window.hrPortal) {
+    window.hrPortal.updateActivityList();
     window.hrPortal.showNotification('Activités actualisées', 'info');
   }
 }

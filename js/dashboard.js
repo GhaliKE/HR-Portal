@@ -1,7 +1,9 @@
 const dashboardState = {
   salaryChart: null,
   deptChart: null,
-  postChart: null
+  postChart: null,
+  evolutionChart: null,
+  staffEvolutionChart: null
 };
 function getStoredData() {
   const employees = JSON.parse(localStorage.getItem('employees')) || [];
@@ -208,12 +210,148 @@ function renderPostChart({ postLabels, postAverages }) {
     }
   });
 }
+
+function renderEvolutionChart() {
+  const ctx = document.getElementById('evolutionChart');
+  if (!ctx) return;
+  destroyChart(dashboardState.evolutionChart);
+
+  const employees = JSON.parse(localStorage.getItem('employees')) || [];
+  const last30Days = getLast30Days();
+  
+  const dailyCounts = last30Days.map(date => {
+    return employees.filter(emp => {
+      if (!emp.dateEmbauche) return false;
+      return emp.dateEmbauche <= date;
+    }).length;
+  });
+
+  dashboardState.evolutionChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last30Days.map(d => formatEvolutionDate(d)),
+      datasets: [{
+        label: 'Nombre d\'employés',
+        data: dailyCounts,
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'rgb(59, 130, 246)',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#cbd5e1',
+            font: { size: 12 },
+            padding: 15
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#cbd5e1' },
+          grid: { color: 'rgba(71, 85, 105, 0.3)' }
+        },
+        x: {
+          ticks: { color: '#cbd5e1' },
+          grid: { color: 'rgba(71, 85, 105, 0.3)' }
+        }
+      }
+    }
+  });
+}
+
+function getLast30Days() {
+  const days = [];
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    days.push(date.toISOString().split('T')[0]);
+  }
+  return days;
+}
+
+function formatEvolutionDate(dateString) {
+  const date = new Date(dateString);
+  return (date.getDate()) + ' ' + ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'][date.getMonth()];
+}
+
+function renderStaffEvolutionChart() {
+  const ctx = document.getElementById('staffEvolutionChart');
+  if (!ctx) return;
+  destroyChart(dashboardState.staffEvolutionChart);
+
+  const employees = JSON.parse(localStorage.getItem('employees')) || [];
+  const last30Days = getLast30Days();
+  
+  const dailyCounts = last30Days.map(date => {
+    return employees.filter(emp => {
+      if (!emp.dateEmbauche) return false;
+      return emp.dateEmbauche <= date;
+    }).length;
+  });
+
+  dashboardState.staffEvolutionChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last30Days.map(d => formatEvolutionDate(d)),
+      datasets: [{
+        label: 'Évolution des effectifs',
+        data: dailyCounts,
+        borderColor: 'rgb(139, 92, 246)',
+        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'rgb(139, 92, 246)',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#cbd5e1',
+            font: { size: 12 },
+            padding: 15
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#cbd5e1', stepSize: 1 },
+          grid: { color: 'rgba(71, 85, 105, 0.3)' }
+        },
+        x: {
+          ticks: { color: '#cbd5e1' },
+          grid: { color: 'rgba(71, 85, 105, 0.3)' }
+        }
+      }
+    }
+  });
+}
+
 function renderDashboard() {
   const { kpi, charts } = buildStats();
   renderKPIs(kpi);
   renderSalaryChart(charts);
   renderDeptChart(charts);
   renderPostChart(charts);
+  renderEvolutionChart();
+  renderStaffEvolutionChart();
 }
 window.refreshDashboard = () => {
   renderDashboard();
